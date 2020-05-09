@@ -1,0 +1,59 @@
+# # This manifest creates a deployment and a service. 
+# # The PODs consume configuration information from ConfigMaps
+# # The service is created for internal use only, it is not exposed 
+# # outside the kubernetes cluster. 
+
+# apiVersion: extensions/v1beta1
+# kind: Deployment
+# metadata:
+#   name: middle-tier-deployment
+#   labels:
+#     app: middle-tier
+#     stackname: fazbear
+# spec:
+#   replicas: 3
+#   selector:
+#     matchLabels:
+#       app: middle-tier
+#   strategy:
+#     rollingUpdate: 
+#       maxSurge: 1
+#       maxUnavailable: 1
+#     type: RollingUpdate
+#   template:
+#     metadata:
+#       labels:
+#         app: middle-tier
+#       annotations:
+#         deployment.kubernetes.io/revision: "1"
+#     spec:
+#       containers:
+#       - name: nginx
+#         image: nginx:1.7
+#         imagePullPolicy: Always
+#         ports:
+#         - containerPort: 80
+#       dnsPolicy: ClusterFirst
+#       restartPolicy: Always
+
+# --- 
+
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: middle-tier
+#   labels:
+#     app: middle-tier
+#     stackname: fazbear
+# spec:
+#   ports:
+#   type: NodePort
+#   ports:
+#   - port: 8080
+#     targetPort: 80
+#     protocol: TCP
+#     name: http
+#   selector:
+#     app: middle-tier
+
+

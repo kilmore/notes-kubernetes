@@ -1,0 +1,1 @@
+https://medium.com/@cashisclay/kubernetes-ingress-82aa960f658e

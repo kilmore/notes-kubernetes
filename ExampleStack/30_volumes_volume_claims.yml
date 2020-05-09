@@ -1,0 +1,32 @@
+# kind: PersistentVolume
+# apiVersion: v1
+# metadata:
+#   name: nfs-pv
+#   labels:
+#     type: nfs
+#     stackname: fazbear
+# spec:
+#   capacity:
+#     storage: 10Gi
+#   accessModes:
+#     - ReadWriteMany
+#   nfs:
+#     server: 10.0.1.241
+#     path: "/var/nfsshare"
+
+# ---
+
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: nfs-pvc
+#   labels:
+#     type: nfs
+#     stackname: fazbear
+# spec:
+#   accessModes:
+#     - ReadWriteMany
+#   storageClassName: ""
+#   resources:
+#     requests:
+#       storage: 3Gi

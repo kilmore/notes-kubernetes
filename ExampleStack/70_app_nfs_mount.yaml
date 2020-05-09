@@ -1,0 +1,37 @@
+# # This manifest creates a replication controller that launches pods
+# # these pods mount an nfs share defined in the volumes_volumes_clains mainfests
+
+# kind: ReplicationController
+# apiVersion: v1
+# metadata:
+#   name: nfs-web
+#   labels:
+#     stackname: fazbear
+# spec:
+#   replicas: 2
+#   selector:
+#     role: web-front-end
+#     stackname: fazbear
+#   template:
+#     metadata:
+#       labels:
+#         role: web-front-end
+#         stackname: fazbear
+#     spec:
+#       containers:
+#       - name: web
+#         image: nginx
+#         ports:
+#           - name: "http-server"
+#             containerPort: 80
+#         volumeMounts:
+#           - mountPath: "/usr/share/nginx/html"
+#             name: website-content
+#       volumes:
+#         - name: website-content
+#           persistentVolumeClaim:
+#             claimName:  nfs-pvc
+
+
+
+

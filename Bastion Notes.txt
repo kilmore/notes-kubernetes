@@ -1,0 +1,56 @@
+yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm -y
+
+yum install grub2-common -y
+
+yum install fwupdate-efi -y
+
+yum groupinstall "Server with GUI" -y
+
+yum remove  xorg-x11-server-Xorg -y
+
+yum install xorg-x11-server-Xorg-1.19.5 -y
+
+yum install xrdp -y
+
+cat <<EOF >> /etc/xrdp/xrdp.ini
+
+[xrdp1]
+name=xrdp
+lib=libvnc.so
+username=ask
+password=ask
+ip=127.0.0.1
+port=5910
+EOF
+
+systemctl start firewalld
+firewall-cmd --permanent --zone=public --add-port=3389/tcp
+firewall-cmd --reload
+
+\cp /etc/pam.d/sshd /etc/pam.d/xrdp-sesman
+systemctl restart xrdp
+systemctl enable xrdp
+
+yum install tigervnc-server -y
+ 
+cp /lib/systemd/system/vncserver\@.service /etc/systemd/system/vncserver@.service
+
+sed -i 's/<USER> -c/ec2-user -c/g' /etc/systemd/system/vncserver@.service
+sed -i 's/vncserver %i/vncserver %i -geometry 1280x1024/g' /etc/systemd/system/vncserver@.service
+sed -i 's/\/<USER>/\/ec2-user/g' /etc/systemd/system/vncserver@.service
+
+systemctl daemon-reload
+
+systemctl start vncserver@:10.service
+systemctl enable vncserver@:10.service
+
+echo "MidnightRun" > /tmp/passFile
+echo "MidnightRun" >> /tmp/passFile
+chmod 777 /tmp/passFile
+runuser -l ec2-user -c vncpasswd </tmp/passFile > ~/vncpasswd.1 2> ~/vncpasswd.2
+rm -f /tmp/passFile
+
+
+
+
+yum update -y # ?

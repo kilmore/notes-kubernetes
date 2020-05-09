@@ -1,0 +1,72 @@
+# This manifest creates a deployment and a service. 
+# The PODs consume configuration information from ConfigMaps
+# The service is created for access outside the kubernetes cluster.
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: front-end-deployment
+  labels:
+    app: front-end
+    stackname: fazbear
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: front-end
+  strategy:
+    rollingUpdate: 
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: front-end
+      annotations:
+        deployment.kubernetes.io/revision: "1"
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.7
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+      #   volumeMounts:
+      #   - name: config-volume
+      #     mountPath: /etc/config
+      #   env: 
+      #   - name: LOG_FILE
+      #     valueFrom:
+      #       configMapKeyRef:
+      #         name: config-map-values
+      #         key: logfile
+      #   - name: TIME_OUT
+      #     valueFrom:
+      #       configMapKeyRef:
+      #         name: config-map-values
+      #         key: timeout  
+      # volumes:
+      # - name: config-volume
+      #   configMap:
+      #     name: config-map-files2
+      # dnsPolicy: ClusterFirst
+      # restartPolicy: Always
+
+--- 
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: front-end
+  labels:
+    app: front-end
+    stackname: fazbear
+spec:
+  type: NodePort
+  ports: 
+    - port: 80
+      nodePort: 30080
+  selector:
+    app: front-end
+    

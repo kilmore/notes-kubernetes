@@ -1,0 +1,31 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: config-map-values
+  labels:
+    stackname: fazbear
+data:
+  logfile: log/applog.log
+  concurrency: "5000"
+  timeout: "300"
+  test: INFO 
+
+--- 
+
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: config-map-files
+  labels:
+    stackname: fazbear
+data:
+  config-file-1: |
+    property1 = value1
+    property2 = value2
+    property3 = value3
+  
+  config-file-2: |
+    property4 = value4
+    property5 = value5
+    property6 = value6
+

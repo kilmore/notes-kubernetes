@@ -1,0 +1,48 @@
+AWS - Enable the extras repo
+# On and internet connected system -> Add the redhat repos so you can download docker and its dependancies
+# this will be differnet for systems not on AWS
+
+sudo yum install yum-utils
+sudo yum-config-manager --enable rhui-REGION-rhel-server-extras
+sudo yum install docker
+
+# Download the docker and kubernetes requirements install rpms
+yumdownloader --resolve yum-utils device-mapper-persistent-data lvm2
+sudo yumdownloader --resolve docker
+
+# Download the containers installed with kubernetes 
+# This list was obtained by doing a kubeadm init and then checking the docker images downloaded. 
+k8s.gcr.io/kube-proxy-amd64:v1.11.3
+k8s.gcr.io/kube-scheduler-amd64:v1.11.3
+k8s.gcr.io/kube-apiserver-amd64:v1.11.3
+k8s.gcr.io/kube-controller-manager-amd64:v1.11.3
+k8s.gcr.io/coredns:1.1.3
+k8s.gcr.io/etcd-amd64:3.2.18
+k8s.gcr.io/pause:3.1
+quay.io/calico/node:v3.1.3
+quay.io/calico/cni:v3.1.3
+
+
+
+# Install on the internet connected machine 
+sudo yum install -y *.rpm (we need docker to pull some repositories 
+
+---------------------------------------------------------------------------------------------------
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+You can now join any number of machines by running the following on each node
+as root:
+
+  kubeadm join 10.0.1.119:6443 --token 4khdo5.tsn0ue6i8cggyeuw --discovery-token-ca-cert-hash sha256:7b91dc7d3b515b598f4f3dad09031b933bfa465402a780057e96d99cac2b999b
+
+
+

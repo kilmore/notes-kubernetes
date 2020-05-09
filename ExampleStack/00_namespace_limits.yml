@@ -1,0 +1,41 @@
+# If your namespace has a resource quota, it is helpful to have a default value in place for memory limit. Here are two of the restrictions that a resource quota imposes on a namespace:
+
+# Every Container that runs in the namespace must have its own memory limit.
+# The total amount of memory used by all Containers in the namespace must not exceed a specified limit.
+# If a Container does not specify its own memory limit, it is given the default limit, and then it can be allowed to run in a namespace that is restricted by a quota
+
+# kubectl get resourcequota mem-cpu-demo --namespace=quota-mem-cpu-example --output=yaml
+
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: default-limites-resources
+  labels:
+    stackname: fazbear
+spec:
+  limits:
+  - default:
+      memory: 512Mi # default memory limit for a container that does not specify an upper limit.
+      cpu: ".5"     # default cpu limit for a container that does not specify an upper limit.
+    defaultRequest:
+      memory: 256Mi # default amount of memory assigned to a container if it doesn't specify its own cpu request
+      cpu: ".5"     # default amount of cpu assigned to a container if it doesn't specify its own cpu request
+    type: Container
+
+--- 
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: resource-quota
+  labels:
+    stackname: fazbear
+spec:
+  hard:
+    requests.cpu: "300" # Across all pods in a non-terminal state, the sum of CPU requests cannot exceed this value.
+    requests.memory: 50Gi # Across all pods in a non-terminal state, the sum of memory requests cannot exceed this value.
+    limits.cpu: "600" # Across all pods in a non-terminal state, the sum of CPU limits cannot exceed this value.
+    limits.memory: 100Gi # Across all pods in a non-terminal state, the sum of memory limits cannot exceed this value.
+    pods: "100000"
+    persistentvolumeclaims: "10"
+    services.loadbalancers: "20"
+    services.nodeports: "100"
